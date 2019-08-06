@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" th:src="@{/js/jquery-2.2.3.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+用户名称1：<input id="userName" type="text"><br>
+<select id="paramType">
+    <option value="1">根据名称查询</option>
+    <option value="2">查询全部</option>
+</select>
+<input id="queryBtn" type="button" value="按照名称查询" onclick="query()">
+
+
+<br><br><br>
+
+
+<table id="userTable">
+    <thead>
+        <tr>ID</tr>
+        <tr>USER_NAME</tr>
+        <tr>EMAIL</tr>
+        <tr>NICK_NAME</tr>
+        <tr>REG_TIME</tr>
+    </thead>
+    <tbody id="userTableTbody"></tbody>
+</table>
+<script>
+    function query(){
+        var url = "/user/listAllUsers";
+        var param = {
+            userName: $("#userName").val()
+        };
+        var paramType = $("#paramType").val();
+        if(paramType=="1"){
+            url = "/user/listAllUsers";
+            param = {};
+        }
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: param,
+            dataType: "json",
+            async: false, //同步请求。当async设置为false，同步的时候，timeout是不生效的。
+            success: function (data) {
+                console.log(data);
+                showUserList(data);
+            },
+            error:function (err) {
+                alert(err);
+                console.log(err);
+            }
+        });
+    }
+
+
+    function showUserList(userList) {
+        if(userList && userList.length>0){
+            var str = "";
+            for(var i in userList){
+                str += "<tr>";
+                str += "<td>"+ userList[i].id +"</td>";
+                str += "<td>"+ userList[i].userName +"</td>";
+                str += "<td>"+ userList[i].email +"</td>";
+                str += "<td>"+ userList[i].nickName +"</td>";
+                str += "<td>"+ userList[i].regTime +"</td>";
+                str += "</tr>";
+            }
+            if(str.length>0){
+                $("#userTableTbody").html(str);
+            }
+        }
+    }
+
+</script>
+
+
+</body>
+</html>
